@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1j894gg" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.5.0">
+  <bpmn:process id="TestProcessWaitForSignal" name="Wait for signal" isExecutable="true" camunda:versionTag="1.0.0">
+    <bpmn:startEvent id="StartEvent_1" name="Start">
+      <bpmn:outgoing>Flow_1e0qgpn</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1e0qgpn" sourceRef="StartEvent_1" targetRef="Activity_1o85def" />
+    <bpmn:intermediateCatchEvent id="Event_1ego8gk" name="Wait for Signal from started Process">
+      <bpmn:incoming>Flow_0n3ptwa</bpmn:incoming>
+      <bpmn:outgoing>Flow_1vyn7z9</bpmn:outgoing>
+      <bpmn:signalEventDefinition id="SignalEventDefinition_0n1msiq" signalRef="Signal_alert" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:endEvent id="Event_EndProcess" name="End - Signal received">
+      <bpmn:incoming>Flow_1vyn7z9</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1vyn7z9" sourceRef="Event_1ego8gk" targetRef="Event_EndProcess" />
+    <bpmn:sequenceFlow id="Flow_0n3ptwa" sourceRef="Activity_1o85def" targetRef="Event_1ego8gk" />
+    <bpmn:sendTask id="Activity_1o85def" name="Start Process and save BusinessKey" camunda:class="delegate.StartProcessByMessageDelegate">
+      <bpmn:incoming>Flow_1e0qgpn</bpmn:incoming>
+      <bpmn:outgoing>Flow_0n3ptwa</bpmn:outgoing>
+    </bpmn:sendTask>
+  </bpmn:process>
+  <bpmn:signal id="Signal_alert" name="processfinished-${WAIT_FOR_BEID}" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="TestProcessWaitForSignal">
+      <bpmndi:BPMNEdge id="Flow_0n3ptwa_di" bpmnElement="Flow_0n3ptwa">
+        <di:waypoint x="370" y="97" />
+        <di:waypoint x="432" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1vyn7z9_di" bpmnElement="Flow_1vyn7z9">
+        <di:waypoint x="468" y="97" />
+        <di:waypoint x="572" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1e0qgpn_di" bpmnElement="Flow_1e0qgpn">
+        <di:waypoint x="215" y="97" />
+        <di:waypoint x="270" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="79" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="185" y="122" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1dx5o88_di" bpmnElement="Event_1ego8gk">
+        <dc:Bounds x="432" y="79" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="415" y="122" width="72" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1ok4m9e_di" bpmnElement="Event_EndProcess">
+        <dc:Bounds x="572" y="79" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="549" y="122" width="82" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_06ovh64_di" bpmnElement="Activity_1o85def">
+        <dc:Bounds x="270" y="57" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
