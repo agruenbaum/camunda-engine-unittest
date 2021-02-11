@@ -182,7 +182,7 @@ public class SignalCommunicationUseCaseTest {
          "TestProcessWaitForSignalParallel.bpmn",
          "TestProcessSendSignalImmediately.bpmn"
    })
-   public void currentlyFailingTest_testProcessNotificationByProcessSpecificSignalParallel_withoutInterruption(){
+   public void testProcessNotificationByProcessSpecificSignalParallel_withoutInterruption(){
       //GIVEN
       String processDefinitionKey = "TestProcessWaitForSignalParallel";
 
@@ -195,14 +195,16 @@ public class SignalCommunicationUseCaseTest {
       ProcessInstance initialProcessInstance = runtimeService().startProcessInstanceByKey(processDefinitionKey, UUID.randomUUID().toString(),startVariables);
 
       //THEN
-      assertThat(initialProcessInstance).isNotEnded();
+      assertThat(initialProcessInstance)
+            .isNotEnded()
+            .hasPassed("Gateway_parallel")
+            .hasNotPassed("Event_waitForSignal")
+            .hasNotPassed("Activity_StartOtherProcess");
 
-      ProcessInstance processInstanceStartedByMsg = runtimeService().createProcessInstanceQuery().processDefinitionKey(processToStart).singleResult();
-      assertThat(processInstanceStartedByMsg).isNotEnded();
+      //now the process one already waits for the signal of process two but has not jet started process two because we have a tx boundary before the start of process two.
+      execute(job());
 
       assertThat(initialProcessInstance).isEnded().hasPassed("Event_EndProcess");
-      assertThat(initialProcessInstance).variables().containsEntry(StartProcessByMessageDelegate.WAIT_FOR_BEID_VARIABLE, processInstanceStartedByMsg.getBusinessKey());
-
-      assertThat(processInstanceStartedByMsg).isEnded();
+      assertThat(initialProcessInstance).hasVariables(StartProcessByMessageDelegate.WAIT_FOR_BEID_VARIABLE);
    }
 }

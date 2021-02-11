@@ -5,7 +5,7 @@
       <bpmn:outgoing>Flow_1e0qgpn</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="Flow_1e0qgpn" sourceRef="StartEvent_1" targetRef="Activity_0alxykz" />
-    <bpmn:intermediateCatchEvent id="Event_1ego8gk" name="Wait for Signal from started Process">
+    <bpmn:intermediateCatchEvent id="Event_waitForSignal" name="Wait for Signal from started Process">
       <bpmn:incoming>Flow_1dvnee2</bpmn:incoming>
       <bpmn:outgoing>Flow_1vyn7z9</bpmn:outgoing>
       <bpmn:signalEventDefinition id="SignalEventDefinition_0n1msiq" signalRef="Signal_alert" />
@@ -13,30 +13,30 @@
     <bpmn:endEvent id="Event_EndProcess" name="End - Signal received">
       <bpmn:incoming>Flow_1xnvazn</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_1vyn7z9" sourceRef="Event_1ego8gk" targetRef="Gateway_0d33or3" />
-    <bpmn:sendTask id="Activity_1o85def" name="Start Process" camunda:class="delegate.StartProcessByMessageDelegate">
+    <bpmn:sequenceFlow id="Flow_1vyn7z9" sourceRef="Event_waitForSignal" targetRef="Gateway_0d33or3" />
+    <bpmn:sendTask id="Activity_StartOtherProcess" name="Start Process" camunda:asyncBefore="true" camunda:class="delegate.StartProcessByMessageDelegate">
       <bpmn:incoming>Flow_16nih4o</bpmn:incoming>
       <bpmn:outgoing>Flow_0u9m741</bpmn:outgoing>
     </bpmn:sendTask>
-    <bpmn:sequenceFlow id="Flow_1ywtmei" sourceRef="Activity_0alxykz" targetRef="Gateway_1d5h39d" />
+    <bpmn:sequenceFlow id="Flow_1ywtmei" sourceRef="Activity_0alxykz" targetRef="Gateway_parallel" />
     <bpmn:serviceTask id="Activity_0alxykz" name="initialize BusinessEvent for calledProcess" camunda:class="delegate.InitializeBusinessEventIdDelegate">
       <bpmn:incoming>Flow_1e0qgpn</bpmn:incoming>
       <bpmn:outgoing>Flow_1ywtmei</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_16nih4o" sourceRef="Gateway_1d5h39d" targetRef="Activity_1o85def" />
-    <bpmn:parallelGateway id="Gateway_1d5h39d">
+    <bpmn:sequenceFlow id="Flow_16nih4o" sourceRef="Gateway_parallel" targetRef="Activity_StartOtherProcess" />
+    <bpmn:parallelGateway id="Gateway_parallel">
       <bpmn:incoming>Flow_1ywtmei</bpmn:incoming>
       <bpmn:outgoing>Flow_16nih4o</bpmn:outgoing>
       <bpmn:outgoing>Flow_1dvnee2</bpmn:outgoing>
     </bpmn:parallelGateway>
-    <bpmn:sequenceFlow id="Flow_1dvnee2" sourceRef="Gateway_1d5h39d" targetRef="Event_1ego8gk" />
+    <bpmn:sequenceFlow id="Flow_1dvnee2" sourceRef="Gateway_parallel" targetRef="Event_waitForSignal" />
     <bpmn:sequenceFlow id="Flow_1xnvazn" sourceRef="Gateway_0d33or3" targetRef="Event_EndProcess" />
     <bpmn:parallelGateway id="Gateway_0d33or3">
       <bpmn:incoming>Flow_1vyn7z9</bpmn:incoming>
       <bpmn:incoming>Flow_0u9m741</bpmn:incoming>
       <bpmn:outgoing>Flow_1xnvazn</bpmn:outgoing>
     </bpmn:parallelGateway>
-    <bpmn:sequenceFlow id="Flow_0u9m741" sourceRef="Activity_1o85def" targetRef="Gateway_0d33or3" />
+    <bpmn:sequenceFlow id="Flow_0u9m741" sourceRef="Activity_StartOtherProcess" targetRef="Gateway_0d33or3" />
   </bpmn:process>
   <bpmn:signal id="Signal_alert" name="processfinished-${WAIT_FOR_BEID}" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
@@ -77,7 +77,7 @@
           <dc:Bounds x="128" y="122" width="24" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1dx5o88_di" bpmnElement="Event_1ego8gk" bioc:stroke="#000" bioc:fill="#fff">
+      <bpmndi:BPMNShape id="Event_1dx5o88_di" bpmnElement="Event_waitForSignal" bioc:stroke="#000" bioc:fill="#fff">
         <dc:Bounds x="422" y="192" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="405" y="235" width="72" height="40" />
@@ -89,13 +89,13 @@
           <dc:Bounds x="659" y="122" width="82" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_06ovh64_di" bpmnElement="Activity_1o85def">
+      <bpmndi:BPMNShape id="Activity_06ovh64_di" bpmnElement="Activity_StartOtherProcess">
         <dc:Bounds x="410" y="57" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_15va2gt_di" bpmnElement="Activity_0alxykz">
         <dc:Bounds x="190" y="57" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1ffao6q_di" bpmnElement="Gateway_1d5h39d">
+      <bpmndi:BPMNShape id="Gateway_1ffao6q_di" bpmnElement="Gateway_parallel">
         <dc:Bounds x="315" y="72" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1wucc89_di" bpmnElement="Gateway_0d33or3">
